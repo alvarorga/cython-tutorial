@@ -2,7 +2,7 @@ import time
 import numpy as np
 cimport numpy as np
 np.import_array()
-from libc.math cimport fmax, fmin
+from libc.math cimport fmax, cos
 
 
 def sum_matrices(double[:, ::1] A, double[:, ::1] B):
@@ -29,3 +29,34 @@ def sum_matrices(double[:, ::1] A, double[:, ::1] B):
             C[i, j] = A[i, j] + B[i, j]
 
     return C
+
+
+def do_complex_array_operation(double[::1] a, double[::1] b):
+    """Complex array operation.
+    
+    In Numpy, the operation reads:
+    out = np.sum( np.cos(a + 2 * b) + np.maximum(a**2, b) )
+    
+    """
+    if a.shape[0] != b.shape[0]:
+        raise Exception(f"The size of vectors a: {a.shape} and b: {b.shape} does not coincide.")
+
+    # Call a C method to do the computation.
+    cdef double out = _do_complex_array_operation(a, b)
+
+    return out
+
+
+# This is a kind of method that only works with C objects. Here we can call
+# C methods like math::fabs or math::cos. In these methods we have to type
+# every variable.
+cdef double _do_complex_array_operation(double[::1] a, double[::1] b):
+    cdef:
+        Py_ssize_t n=a.shape[0]
+        Py_ssize_t i
+        double out=0.0
+
+    for i in range(n):
+        out += cos(a[i] + 2 * b[i]) + fmax(a[i]**2, b[i])
+
+    return out
