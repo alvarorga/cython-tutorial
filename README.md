@@ -2,6 +2,10 @@
 
 Simple scripts and examples to learn Cython
 
+## Cython documentation
+
+You can find the documentation of Cython [here](https://docs.cython.org/en/latest/)
+
 ## Installation
 
 We recommend to run this tutorial in a clean Python environment. For example:
